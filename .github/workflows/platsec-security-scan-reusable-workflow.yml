@@ -1,0 +1,80 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# This workflow checks out code, builds an image, performs a container image
+# vulnerability scan with Anchore's Grype tool, and generates an
+# SBOM via Anchore's Syft tool
+
+# For more information on Anchore's container image scanning tool Grype, see
+# https://github.com/anchore/grype
+
+# For more information about the Anchore SBOM tool, Syft, see
+# https://github.com/anchore/syft
+
+name: ConsoleDot Platform Security Scan - Reusable Workflow 
+
+env: 
+  GRYPE_VERSION: "v0.62.3"
+  SYFT_VERSION: "v0.83.0"
+  GRYPE_ARTIFACTS_DIR: $GRYPE_ARTIFACTS_DIR
+
+on:
+  workflow_call:
+  
+
+permissions:
+  contents: read
+
+jobs:
+  Anchore-Grype-Vulnerability-Scan:
+    permissions:
+      contents: read    # for actions/checkout to fetch code
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out the code
+      uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag localbuild/testimage:latest
+    - name: Install Anchore Grype
+      run: curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin $GRYPE_VERSION
+    - name: Scan image for Vulnerabilities
+      run: |
+        mkdir $GRYPE_ARTIFACTS_DIR
+        grype -v -o table localbuild/testimage:latest > $GRYPE_ARTIFACTS_DIR/grype-vuln-results-full.txt
+        grype -v -o table --only-fixed localbuild/testimage:latest > $GRYPE_ARTIFACTS_DIR/grype-vuln-results-fixable.txt
+    - name: Provide Grype Vulnerability Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: grype-vuln-artifacts
+        path: $GRYPE_ARTIFACTS_DIR
+    - name: Grade Container Image (Pass or Fail)
+      uses: anchore/scan-action@4be3c24559b430723e51858969965e163b196957
+      id: scan
+      with:
+        image: "localbuild/testimage:latest"
+        grype-version: ${{env.GRYPE_VERSION}}
+        only-fixed: true
+        fail-build: true
+        severity-cutoff: high
+        output-format: table
+
+  Anchore-Syft-SBOM-Scan:
+    permissions:
+      contents: read     # for actions/checkout to fetch code
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag localbuild/testimage:latest
+    - name: Install Anchore Syft
+      run: curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin $SYFT_VERSION
+    - name: Scan the image and generate SBOM
+      run: syft -v localbuild/testimage:latest > syft-sbom-results.txt
+    - name: Provide Syft SBOM Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: syft-sbom-artifacts
+        path: syft-sbom-results.txt
