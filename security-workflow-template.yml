@@ -24,4 +24,4 @@ on:
 
 jobs:
   PlatSec-Security-Workflow:
-    uses: casey-williams-rh/security-actions/.github/workflows/platsec-security-scan-reusable-workflow.yml@master
+    uses: RedHatInsights/platform-security-gh-workflow/.github/workflows/platsec-security-scan-reusable-workflow.yml@master
