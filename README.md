@@ -1,4 +1,4 @@
-# Platform Security Github Workflow
+# Platform Security GitHub Workflow
 
 This project aims to provide Red Hat ConsoleDot Teams with a way to scan the containers they create in a convenient, automated, and reliable manner within their GitHub repository. The `Platform Security Github Workflow` lets teams get security feedback as they open Pull Requests and fix any vulnerability before committing the code to a repository.
 
