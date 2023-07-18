@@ -22,9 +22,15 @@ After the workflow has run, you can download artifacts of the results from the a
 Additionally, if the container image built and scanned contains any fixable vulnerabilities of `High` or `Critical` severity, the `Grype-Vulnerability-Scan` portion of the workflow will be flagged as a failure and let you know the reason. 
 
 **Please Note:** You may have to enable the following in the `actions/general` settings:
+
+**Private Repos**
 * Fork pull request workflows
    * Run workflows from fork pull requests
    * Require approval for fork pull request workflows.
+
+**Public Repos**
+* Fork pull request workflows from outside collaborators
+   * Require approval for first-time contributors.
 
 
 ## What about updates?
