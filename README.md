@@ -35,7 +35,8 @@ The `security-workflow-template.yml` file is pre-configured to use the reusable 
 
 **Unauthorized Error (During Docker Build):**
 ```
-Unauthorized: Please login to the Red Hat Registry using your Customer Portal credentials. Further instructions can be found here: https://access.redhat.com/RegistryAuthentication
+Unauthorized: Please login to the Red Hat Registry using your Customer Portal credentials.
+Further instructions can be found here: https://access.redhat.com/RegistryAuthentication
 ```
 **Solution:**
 * The Dockerfile within the repo is likely pulling from a RH Registry that requires authentication. We recommend pulling from `registry.access.redhat.com`.
