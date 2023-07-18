@@ -29,3 +29,24 @@ Additionally, if the container image built and scanned contains any fixable vuln
 
 ## What about updates?
 The `security-workflow-template.yml` file is pre-configured to use the reusable GitHub workflow in the `main/master` branch of this repository, so any updates to the scanners or functionality done by the Platform-Security Team will be automatically inherited. 
+
+
+## Troubleshooting
+
+**Unauthorized Error (During Docker Build):**
+```
+Unauthorized: Please login to the Red Hat Registry using your Customer Portal credentials. Further instructions can be found here: https://access.redhat.com/RegistryAuthentication
+```
+**Solution:**
+* The Dockerfile within the repo is likely pulling from a RH Registry that requires authentication. We recommend pulling from `registry.access.redhat.com`.
+
+Please review the RH Registries below:
+
+
+Registry | Content | Supports Unauthenticated Access | Supports Red Hat login | Supports Registry Tokens
+-- | -- | -- | -- | --
+registry.access.redhat.com | Red Hat products | Yes | No | No
+registry.redhat.io | Red Hat products | No | Yes | Yes
+registry.connect.redhat.com | Third-party products | No | Yes | Yes
+
+REF: https://access.redhat.com/RegistryAuthentication
